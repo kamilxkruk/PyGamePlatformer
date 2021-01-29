@@ -1,5 +1,6 @@
 import pygame, sys
 from player import Player
+from settings import *
 
 
 class GameObject(object):
@@ -7,17 +8,18 @@ class GameObject(object):
     def __init__(self):
         pygame.init()
 
-        self.screenSize = (800, 600) #Tuple
+        self.screenSize = (SCREEN_WIDTH, SCREEN_HEIGHT) #Tuple
 
         self.display = pygame.display.set_mode(self.screenSize)
         pygame.display.set_caption('First PyGame App')
         self.pyClock = pygame.time.Clock()
         self.player = Player()
+        self.gravity = True
 
     # process game
     def process_game(self):
         while True:
-            self.pyClock.tick(30)
+            self.pyClock.tick(FPS)
             self.handle_events()
             self.read_keyboard()
             self.print()
