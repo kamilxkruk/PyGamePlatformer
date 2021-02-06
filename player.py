@@ -26,14 +26,25 @@ class Player(object):
     def move(self, keys):
         self.infoLabel = self.myFont.render('A: '+str(keys[pygame.K_a])+' D: '+str(keys[pygame.K_d]) ,1,WHITE)
         self.acc_x = 0
+        if self.rectangle.bottom < SCREEN_HEIGHT:
+            self.acc_y = GRAVITY
+        else:
+            self.velocity_Y = 0
+            self.acc_y = 0
 
         if keys[pygame.K_d]:
             self.acc_x = 1.5
         elif keys[pygame.K_a]:
             self.acc_x = -1.5
 
+        if keys[pygame.K_w]:
+            self.acc_y = -3.5
+        elif keys[pygame.K_s]:
+            self.acc_y = 3.5
+
 
         self.velocity_X += self.acc_x
+        self.velocity_Y += self.acc_y
 
         if abs(self.velocity_X) > 0.5:
             if self.velocity_X > 0:
@@ -43,11 +54,18 @@ class Player(object):
 
             self.rectangle.x += self.velocity_X
 
+        if abs(self.velocity_Y) > 0.5:
+            if self.velocity_Y > 0:
+                self.velocity_Y -= self.velocity_Y * FRICTION
+            elif self.velocity_Y < 0:
+                self.velocity_Y += abs(self.velocity_Y) * FRICTION
+
+            self.rectangle.y += self.velocity_Y
+
         self.velocityLabel = self.myFont.render('V: '+str(self.velocity_X),1,WHITE)
 
 
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
         display.blit(self.velocityLabel,self.velocityLabelRect)
-        pygame.draw.circle(display,(3,252,40),(self.rectangle.x+15,self.rectangle.y+15),15)
-
+        pygame.draw.circle(display,(3,252,40),(self.rectangle.x,self.rectangle.y),15)
