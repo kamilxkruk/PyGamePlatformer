@@ -4,55 +4,37 @@ from settings import *
 
 class Player(object):
     def __init__(self):
-        self.position_x = SCREEN_WIDTH / 2 - BOX_SIZE
-        self.position_y = SCREEN_HEIGHT / 2 - BOX_SIZE
-        self.speed_x = 0
-        self.speed_y = 0
+        self.centerOfScreen = (SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2)
+        self.position = self.centerOfScreen
+        self.velocity_X = 0
+        self.velocity_Y = 0
         self.acc_x = 0
         self.acc_y = 0
-        self.rectangle = pygame.Rect(self.position_x, self.position_y, BOX_SIZE, BOX_SIZE)
+        self.rectangle = pygame.Rect(0,0, BOX_SIZE, BOX_SIZE)
+        self.rectangle.center = self.position
+
+        self.myFont = pygame.font.SysFont("Times New Roman", 18)
+        self.infoLabel = self.myFont.render('Test',1,WHITE)
+        self.infoLabelRect = self.infoLabel.get_rect()
+        # self.infoLabelRect.bottomright = (SCREEN_WIDTH,SCREEN_HEIGHT)
 
 
     def move(self, keys):
-        self.acc_x = 0
-        if self.rectangle.top <= SCREEN_HEIGHT - 2 * BOX_SIZE:
-            self.acc_y = GRAVITY
+        self.infoLabel = self.myFont.render('A: '+str(keys[pygame.K_a])+' D: '+str(keys[pygame.K_d]) ,1,WHITE)
+
+        self.velocity_X = 0
 
         if keys[pygame.K_d]:
-            self.acc_x += 0.5
+            self.velocity_X = 5
         elif keys[pygame.K_a]:
-            self.acc_x -= 0.5
+            self.velocity_X = -5
 
-        if keys[pygame.K_w]:
-            self.acc_y -= 1
-
-        self.acc_x -= self.speed_x * FRICTION
-        self.speed_x += self.acc_x
-
-        self.acc_y -= self.speed_y * FRICTION
-        self.speed_y += self.acc_y
-
-        self.rectangle.x += self.speed_x + 0.5 * self.acc_x
-
-        if self.rectangle.top <= SCREEN_HEIGHT - 2 * BOX_SIZE:
-            self.rectangle.y += self.speed_y + 0.5 * self.acc_y
-        else:
-            self.speed_y = 0
-            self.acc_y = 0
-            self.rectangle.top = SCREEN_HEIGHT - 2 * BOX_SIZE
+        self.rectangle.x += self.velocity_X
 
 
 
-        # if keys[pygame.K_a] and self.rectangle.left > 0:
-        #     self.rectangle.x -= self.player_speed
-        # elif keys[pygame.K_d] and self.rectangle.right < 800 - 15:
-        #     self.rectangle.x += self.player_speed
-        #
-        # if keys[pygame.K_w] and self.rectangle.top > 0:
-        #     self.rectangle.y -= self.player_speed
-        # elif keys[pygame.K_s] and self.rectangle.top < 600 - 30:
-        #     self.rectangle.y += self.player_speed
 
-    def display(self, display):
+    def display(self, display: pygame.Surface):
+        display.blit(self.infoLabel,self.infoLabelRect)
         pygame.draw.circle(display,(3,252,40),(self.rectangle.x+15,self.rectangle.y+15),15)
 

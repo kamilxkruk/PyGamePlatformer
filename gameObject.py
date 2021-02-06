@@ -38,6 +38,6 @@ class GameObject(object):
         self.player.move(keys)
 
     def print(self):
-        self.display.fill((0, 0, 0))
+        self.display.fill(BLACK)
         self.player.display(self.display)
         pygame.display.flip()
