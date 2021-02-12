@@ -31,6 +31,7 @@ class Player(object):
         else:
             self.velocity_Y = 0
             self.acc_y = 0
+            self.rectangle.bottom = SCREEN_HEIGHT
 
         if keys[pygame.K_d]:
             self.acc_x = 1.5
@@ -52,7 +53,8 @@ class Player(object):
             elif self.velocity_X < 0:
                 self.velocity_X += abs(self.velocity_X) * FRICTION
 
-            self.rectangle.x += self.velocity_X
+            if self.velocity_X > 0 or (self.velocity_X < 0 and  self.rectangle.left + self.velocity_X > 0):
+                self.rectangle.x += self.velocity_X
 
         if abs(self.velocity_Y) > 0.5:
             if self.velocity_Y > 0:
@@ -68,4 +70,6 @@ class Player(object):
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
         display.blit(self.velocityLabel,self.velocityLabelRect)
-        pygame.draw.circle(display,(3,252,40),(self.rectangle.x,self.rectangle.y),15)
+
+        pygame.draw.circle(display,(3,252,40),self.rectangle.center,BOX_SIZE/2)
+        pygame.draw.rect(display,WHITE,self.rectangle)

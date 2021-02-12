@@ -5,7 +5,7 @@ FPS = 30
 FRICTION = 0.13
 GRAVITY = 1.5
 
-BOX_SIZE = 15
+BOX_SIZE = 30
 
 # colors
 WHITE = (255,255,255)
