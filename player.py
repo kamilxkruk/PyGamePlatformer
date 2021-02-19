@@ -5,13 +5,23 @@ from settings import *
 class Player(object):
     def __init__(self):
         self.centerOfScreen = (SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2)
-        self.position = self.centerOfScreen
+        self.position = (self.centerOfScreen)
         self.velocity_X = 0
         self.velocity_Y = 0
         self.acc_x = 0
         self.acc_y = 0
         self.rectangle = pygame.Rect(0,0, BOX_SIZE, BOX_SIZE)
         self.rectangle.center = self.position
+
+        self.playerSprite = pygame.sprite.Sprite()
+        self.playerSprite.rect = self.rectangle
+        #Setting sprite
+        self.playerSprite.image = pygame.Surface((BOX_SIZE,BOX_SIZE))
+        pygame.draw.circle(self.playerSprite.image,LIGHT_BLUE,(BOX_SIZE/2,BOX_SIZE/2),BOX_SIZE/2)
+
+
+        self.playerSpriteGroup = pygame.sprite.Group()
+        self.playerSpriteGroup.add(self.playerSprite)
 
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
         self.infoLabel = self.myFont.render('Test',1,WHITE)
@@ -21,6 +31,7 @@ class Player(object):
         self.velocityLabelRect = self.velocityLabel.get_rect()
         self.velocityLabelRect.topleft = (0,30)
         # self.infoLabelRect.bottomright = (SCREEN_WIDTH,SCREEN_HEIGHT)
+
 
 
     def move(self, keys):
@@ -55,6 +66,8 @@ class Player(object):
 
             if self.velocity_X > 0 or (self.velocity_X < 0 and  self.rectangle.left + self.velocity_X > 0):
                 self.rectangle.x += self.velocity_X
+                if self.velocity_X > 0 and self.rectangle.left > SCREEN_WIDTH:
+                    self.rectangle.left = 0
 
         if abs(self.velocity_Y) > 0.5:
             if self.velocity_Y > 0:
@@ -71,5 +84,8 @@ class Player(object):
         display.blit(self.infoLabel,self.infoLabelRect)
         display.blit(self.velocityLabel,self.velocityLabelRect)
 
-        pygame.draw.circle(display,(3,252,40),self.rectangle.center,BOX_SIZE/2)
-        pygame.draw.rect(display,WHITE,self.rectangle)
+        self.playerSpriteGroup.update()
+        self.playerSpriteGroup.draw(display)
+
+        # pygame.draw.circle(display,LIGHT_BLUE,self.rectangle.center,BOX_SIZE/2)
+        # pygame.draw.rect(display,WHITE,self.rectangle)
