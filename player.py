@@ -23,6 +23,17 @@ class Player(object):
         self.playerSpriteGroup = pygame.sprite.Group()
         self.playerSpriteGroup.add(self.playerSprite)
 
+        self.platformSpriteGroup = pygame.sprite.Group()
+        self.platformSprite1 = pygame.sprite.Sprite()
+        self.platformSprite1.image = pygame.Surface((150,30))
+        self.platformSprite1.image.fill(WHITE)
+        self.platformSprite1.rect = self.platformSprite1.image.get_rect()
+        self.platformSprite1.rect.center = (self.centerOfScreen[0],self.centerOfScreen[1]+200)
+        self.platformSpriteGroup.add(self.platformSprite1)
+
+
+
+
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
         self.infoLabel = self.myFont.render('Test',1,WHITE)
         self.infoLabelRect = self.infoLabel.get_rect()
@@ -67,7 +78,7 @@ class Player(object):
             if self.velocity_X > 0 or (self.velocity_X < 0 and  self.rectangle.left + self.velocity_X > 0):
                 self.rectangle.x += self.velocity_X
                 if self.velocity_X > 0 and self.rectangle.left > SCREEN_WIDTH:
-                    self.rectangle.left = 0
+                    self.rectangle.right = 0
 
         if abs(self.velocity_Y) > 0.5:
             if self.velocity_Y > 0:
@@ -79,13 +90,25 @@ class Player(object):
 
         self.velocityLabel = self.myFont.render('V: '+str(self.velocity_X),1,WHITE)
 
+    def detectCollision(self):
+        playerPos = self.playerSprite.rect
+        collision = self.platformSprite1.rect.colliderect(playerPos)
+        if collision:
+            self.platformSprite1.image.fill(RED)
+        else:
+            self.platformSprite1.image.fill(WHITE)
+
 
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
         display.blit(self.velocityLabel,self.velocityLabelRect)
 
+        self.platformSpriteGroup.update()
+        self.platformSpriteGroup.draw(display)
+
         self.playerSpriteGroup.update()
         self.playerSpriteGroup.draw(display)
 
-        # pygame.draw.circle(display,LIGHT_BLUE,self.rectangle.center,BOX_SIZE/2)
-        # pygame.draw.rect(display,WHITE,self.rectangle)
+        self.detectCollision()
+
+
