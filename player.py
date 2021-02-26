@@ -24,12 +24,21 @@ class Player(object):
         self.playerSpriteGroup.add(self.playerSprite)
 
         self.platformSpriteGroup = pygame.sprite.Group()
+
         self.platformSprite1 = pygame.sprite.Sprite()
-        self.platformSprite1.image = pygame.Surface((150,30))
-        self.platformSprite1.image.fill(WHITE)
+        self.platformSprite1.image = pygame.Surface((30,30))
+        self.platformSprite1.image.fill(YELLOW)
         self.platformSprite1.rect = self.platformSprite1.image.get_rect()
         self.platformSprite1.rect.center = (self.centerOfScreen[0],self.centerOfScreen[1]+200)
+
+        self.platformSprite2 = pygame.sprite.Sprite()
+        self.platformSprite2.image = pygame.Surface((30,30))
+        self.platformSprite2.image.fill(YELLOW)
+        self.platformSprite2.rect = self.platformSprite2.image.get_rect()
+        self.platformSprite2.rect.center = (self.centerOfScreen[0]-200, self.centerOfScreen[1])
+
         self.platformSpriteGroup.add(self.platformSprite1)
+        self.platformSpriteGroup.add(self.platformSprite2)
 
 
 
@@ -42,6 +51,9 @@ class Player(object):
         self.velocityLabelRect = self.velocityLabel.get_rect()
         self.velocityLabelRect.topleft = (0,30)
         # self.infoLabelRect.bottomright = (SCREEN_WIDTH,SCREEN_HEIGHT)
+
+        self.musicPlayer = pygame.mixer.init()
+        self.coinSound = pygame.mixer.Sound('sounds/1.mp3')
 
 
 
@@ -91,12 +103,10 @@ class Player(object):
         self.velocityLabel = self.myFont.render('V: '+str(self.velocity_X),1,WHITE)
 
     def detectCollision(self):
-        playerPos = self.playerSprite.rect
-        collision = self.platformSprite1.rect.colliderect(playerPos)
+        collision = pygame.sprite.spritecollide(self.playerSprite,self.platformSpriteGroup,True)
         if collision:
-            self.platformSprite1.image.fill(RED)
-        else:
-            self.platformSprite1.image.fill(WHITE)
+           #  Dodać punkty
+           self.coinSound.play()
 
 
     def display(self, display: pygame.Surface):
