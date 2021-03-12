@@ -1,52 +1,30 @@
 import pygame
 from settings import *
 from sprites.coinSprite import CoinSprite
+from sprites.playerSprite import PlayerSprite
+from sprites.platformSprite import PlatformSprite
 
 class Player(object):
     def __init__(self):
         self.centerOfScreen = (SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2)
-        self.position = (self.centerOfScreen)
         self.velocity_X = 0
         self.velocity_Y = 0
         self.acc_x = 0
         self.acc_y = 0
-        self.rectangle = pygame.Rect(0,0, BOX_SIZE, BOX_SIZE)
-        self.rectangle.center = self.position
 
-        self.playerSprite = pygame.sprite.Sprite()
-        self.playerSprite.rect = self.rectangle
-        #Setting sprite
-        self.playerSprite.image = pygame.Surface((BOX_SIZE,BOX_SIZE))
-        pygame.draw.circle(self.playerSprite.image,LIGHT_BLUE,(BOX_SIZE/2,BOX_SIZE/2),BOX_SIZE/2)
-
-
+        #Setting up sprites
+        self.playerSprite = PlayerSprite()
         self.playerSpriteGroup = pygame.sprite.Group()
         self.playerSpriteGroup.add(self.playerSprite)
 
-        self.platformSpriteGroup = pygame.sprite.Group()
+        self.rectangle = self.playerSprite.rect
 
+        self.platformSpriteGroup = pygame.sprite.Group()
+        self.platformSpriteGroup.add(PlatformSprite(self.centerOfScreen[0]-150,self.centerOfScreen[1]+200))
 
         self.coinSpriteGroup = pygame.sprite.Group()
-        self.coinSpriteGroup.add(CoinSprite(self.centerOfScreen[0],self.centerOfScreen[1]+200))
+        self.coinSpriteGroup.add(CoinSprite(self.centerOfScreen[0]+100,self.centerOfScreen[1]+150))
         self.coinSpriteGroup.add(CoinSprite(self.centerOfScreen[0]-200,self.centerOfScreen[1]))
-
-        # self.platformSprite1 = pygame.sprite.Sprite()
-        # self.platformSprite1.image = pygame.Surface((30,30))
-        # self.platformSprite1.image.fill(YELLOW)
-        # self.platformSprite1.rect = self.platformSprite1.image.get_rect()
-        # self.platformSprite1.rect.center = (self.centerOfScreen[0],self.centerOfScreen[1]+200)
-        #
-        # self.platformSprite2 = pygame.sprite.Sprite()
-        # self.platformSprite2.image = pygame.Surface((30,30))
-        # self.platformSprite2.image.fill(YELLOW)
-        # self.platformSprite2.rect = self.platformSprite2.image.get_rect()
-        # self.platformSprite2.rect.center = (self.centerOfScreen[0]-200, self.centerOfScreen[1])
-
-        # self.platformSpriteGroup.add(self.platformSprite1)
-        # self.platformSpriteGroup.add(self.platformSprite2)
-
-
-
 
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
         self.infoLabel = self.myFont.render('Test',1,WHITE)
@@ -78,9 +56,14 @@ class Player(object):
             self.acc_x = -1.5
 
         if keys[pygame.K_w]:
-            self.acc_y = -3.5
-        elif keys[pygame.K_s]:
-            self.acc_y = 3.5
+            self.playerSprite.rect.y += 1
+            hits = self.playerSprite.rect.midbottom[1] > SCREEN_HEIGHT
+            self.playerSprite.rect.y -= 1
+            if hits:
+                self.velocity_Y = -30
+
+        # elif keys[pygame.K_s]:
+        #     self.acc_y = 3.5
 
 
         self.velocity_X += self.acc_x
@@ -113,7 +96,6 @@ class Player(object):
             pass
            #  Dodać punkty
            # self.coinSound.play()
-
 
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
