@@ -12,6 +12,8 @@ class Player(object):
         self.acc_x = 0
         self.acc_y = 0
 
+        self.points = 0
+
         #Setting up sprites
         self.playerSprite = PlayerSprite()
         self.playerSpriteGroup = pygame.sprite.Group()
@@ -20,28 +22,25 @@ class Player(object):
         self.rectangle = self.playerSprite.rect
 
         self.platformSpriteGroup = pygame.sprite.Group()
-        self.platformSpriteGroup.add(PlatformSprite(self.centerOfScreen[0]-150,self.centerOfScreen[1]+200))
+        for platform in PLATFORMS:
+            self.platformSpriteGroup.add(PlatformSprite(*platform))
+            # * - spread operator
 
         self.coinSpriteGroup = pygame.sprite.Group()
         self.coinSpriteGroup.add(CoinSprite(self.centerOfScreen[0]+100,self.centerOfScreen[1]+150))
         self.coinSpriteGroup.add(CoinSprite(self.centerOfScreen[0]-200,self.centerOfScreen[1]))
 
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
-        self.infoLabel = self.myFont.render('Test',1,WHITE)
+        self.infoLabel = self.myFont.render('Points: 0',1,WHITE)
         self.infoLabelRect = self.infoLabel.get_rect()
-
-        self.velocityLabel = self.myFont.render('0',1,WHITE)
-        self.velocityLabelRect = self.velocityLabel.get_rect()
-        self.velocityLabelRect.topleft = (0,30)
-        # self.infoLabelRect.bottomright = (SCREEN_WIDTH,SCREEN_HEIGHT)
 
         self.musicPlayer = pygame.mixer.init()
         self.coinSound = pygame.mixer.Sound('sounds/1.mp3')
 
+        self.platformCollision = []
 
 
     def move(self, keys):
-        self.infoLabel = self.myFont.render('A: '+str(keys[pygame.K_a])+' D: '+str(keys[pygame.K_d]) ,1,WHITE)
         self.acc_x = 0
         if self.rectangle.bottom < SCREEN_HEIGHT:
             self.acc_y = GRAVITY
@@ -59,8 +58,9 @@ class Player(object):
             self.playerSprite.rect.y += 1
             hits = self.playerSprite.rect.midbottom[1] > SCREEN_HEIGHT
             self.playerSprite.rect.y -= 1
-            if hits:
+            if hits or self.platformCollision:
                 self.velocity_Y = -30
+
 
 
 
@@ -86,26 +86,25 @@ class Player(object):
 
             self.rectangle.y += self.velocity_Y
 
-        self.velocityLabel = self.myFont.render('V: '+str(self.velocity_X),1,WHITE)
 
     def detectCoinCollision(self):
         collision = pygame.sprite.spritecollide(self.playerSprite,self.coinSpriteGroup,True)
         if collision:
-            pass
-           #  Dodać punkty
-           # self.coinSound.play()
+            self.points += 1
+            self.infoLabel = self.myFont.render('Points: '+ str(self.points), 1,WHITE)
+            # self.coinSound.play()
 
     def detectPlatformCollision(self):
-        platformCollision = pygame.sprite.spritecollide(self.playerSprite,self.platformSpriteGroup,False)
-        if platformCollision and self.velocity_Y>0:
+        self.platformCollision = pygame.sprite.spritecollide(self.playerSprite,self.platformSpriteGroup,False)
+        if self.platformCollision and self.velocity_Y>0:
             self.acc_y = 0
             self.velocity_Y = 0
-            self.rectangle.bottom = platformCollision[0].rect.top
+            self.onPlatform = True
+            self.rectangle.bottom = self.platformCollision[0].rect.top
 
 
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
-        display.blit(self.velocityLabel,self.velocityLabelRect)
 
         self.platformSpriteGroup.update()
         self.platformSpriteGroup.draw(display)
@@ -119,6 +118,7 @@ class Player(object):
         self.detectPlatformCollision()
 
         self.detectCoinCollision()
+
 
 
 
