@@ -62,8 +62,6 @@ class Player(object):
             if hits:
                 self.velocity_Y = -30
 
-        # elif keys[pygame.K_s]:
-        #     self.acc_y = 3.5
 
 
         self.velocity_X += self.acc_x
@@ -90,12 +88,20 @@ class Player(object):
 
         self.velocityLabel = self.myFont.render('V: '+str(self.velocity_X),1,WHITE)
 
-    def detectCollision(self):
+    def detectCoinCollision(self):
         collision = pygame.sprite.spritecollide(self.playerSprite,self.coinSpriteGroup,True)
         if collision:
             pass
            #  Dodać punkty
            # self.coinSound.play()
+
+    def detectPlatformCollision(self):
+        platformCollision = pygame.sprite.spritecollide(self.playerSprite,self.platformSpriteGroup,False)
+        if platformCollision and self.velocity_Y>0:
+            self.acc_y = 0
+            self.velocity_Y = 0
+            self.rectangle.bottom = platformCollision[0].rect.top
+
 
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
@@ -110,5 +116,11 @@ class Player(object):
         self.playerSpriteGroup.update()
         self.playerSpriteGroup.draw(display)
 
-        self.detectCollision()
+        self.detectPlatformCollision()
+
+        self.detectCoinCollision()
+
+
+
+
 
