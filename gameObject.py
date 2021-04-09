@@ -1,5 +1,6 @@
 import pygame, sys
 from player import Player
+from levelEditor import LevelEditor
 from settings import *
 
 
@@ -15,11 +16,22 @@ class GameObject(object):
         self.pyClock = pygame.time.Clock()
         self.gameMode = 0 #0 - menu, 1 - gra, 2 - edit mode
         self.player = Player()
+        self.levelEditor = LevelEditor()
         self.gravity = True
 
         self.gameMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+120,200,50)
         self.editMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+220,200,50)
         self.exitMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+320,200,50)
+        self.myMenuFont = pygame.font.SysFont("Times New Roman", 25)
+        self.gameLabel = self.myMenuFont.render('Play', 1, WHITE)
+        self.gameLabelRect = self.gameLabel.get_rect()
+        self.gameLabelRect.center = self.gameMenuRectangle.center
+        self.editLabel = self.myMenuFont.render('Level editor', 1, WHITE)
+        self.editLabelRect = self.editLabel.get_rect()
+        self.editLabelRect.center = self.editMenuRectangle.center
+        self.exitLabel = self.myMenuFont.render('Exit', 1, WHITE)
+        self.exitLabelRect = self.exitLabel.get_rect()
+        self.exitLabelRect.center = self.exitMenuRectangle.center
 
     # process game
     def process_game(self):
@@ -35,16 +47,15 @@ class GameObject(object):
             if event.type == pygame.QUIT:
                 sys.exit(0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                pass
+                self.gameMode = 0
             elif event.type == pygame.MOUSEBUTTONUP:
                 mousePosition = pygame.mouse.get_pos()
                 if self.gameMenuRectangle.collidepoint(mousePosition):
                     self.gameMode = 1
-
-                #Jeżeli rectangleGraj koliduje -> gameMode = 1
-                #Jeżeli rectangleEdytujPoziom koliduje -> gameMode = 2
-                #Jeżeli rectangleWyjdź -> sys.exit(0)
-
+                elif self.editMenuRectangle.collidepoint(mousePosition):
+                    self.gameMode = 2
+                elif self.exitMenuRectangle.collidepoint(mousePosition):
+                    sys.exit(0)
 
     # read keyboard
     def read_keyboard(self):
@@ -67,6 +78,9 @@ class GameObject(object):
         self.player.display(self.display)
 
     def print_menu(self):
-        pygame.draw.rect(self.display,GREY,self.gameMenuRectangle)
-        pygame.draw.rect(self.display,GREY,self.editMenuRectangle)
-        pygame.draw.rect(self.display,GREY,self.exitMenuRectangle)
+        pygame.draw.rect(self.display,GRAY,self.gameMenuRectangle)
+        pygame.draw.rect(self.display,GRAY,self.editMenuRectangle)
+        pygame.draw.rect(self.display,GRAY,self.exitMenuRectangle)
+        self.display.blit(self.gameLabel,self.gameLabelRect)
+        self.display.blit(self.editLabel,self.editLabelRect)
+        self.display.blit(self.exitLabel,self.exitLabelRect)
