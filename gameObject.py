@@ -13,6 +13,7 @@ class GameObject(object):
         self.display = pygame.display.set_mode(self.screenSize)
         pygame.display.set_caption('First PyGame App')
         self.pyClock = pygame.time.Clock()
+
         self.player = Player()
         self.gravity = True
 
@@ -21,6 +22,7 @@ class GameObject(object):
         while True:
             self.pyClock.tick(FPS)
             self.handle_events()
+
             self.read_keyboard()
             self.print()
 
@@ -30,7 +32,8 @@ class GameObject(object):
             if event.type == pygame.QUIT:
                 sys.exit(0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                sys.exit(0)
+                pass
+                # sys.exit(0)
 
     # read keyboard
     def read_keyboard(self):
