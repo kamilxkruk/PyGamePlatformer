@@ -1,6 +1,7 @@
 import pygame, sys
 from player import Player
 from levelEditor import LevelEditor
+from files import FileManagement
 from settings import *
 
 
@@ -52,6 +53,11 @@ class GameObject(object):
                 sys.exit(0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.gameMode = GAMEMODE_MENU
+            elif self.gameMode == GAMEMODE_LEVEL_EDITOR and event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+                fileService =  FileManagement()
+                fileService.WriteLevelToFile('poziom1.txt',self.levelEditorData)
+                print("Saved!")
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mousePosition = pygame.mouse.get_pos()
 
