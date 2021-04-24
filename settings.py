@@ -14,7 +14,7 @@ GREEN = (0,255,0)
 RED = (255,0,0)
 YELLOW = (255,255,0)
 LIGHT_BLUE = (3,244,252)
-BROWN = (122, 119, 106)
+BROWN = (120, 71, 12)
 GRAY = (128,138,138)
 
 # platforms

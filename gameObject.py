@@ -114,7 +114,18 @@ class GameObject(object):
         for rowId in range(len(self.levelEditorData)):
             for columnId in range(len(self.levelEditorData[rowId])):
                 if self.levelEditorData[rowId][columnId] != 0:
-                    pygame.draw.rect(self.display,GREEN,pygame.rect.Rect((columnId*TILE_SIZE,rowId*TILE_SIZE),(TILE_SIZE,TILE_SIZE)))
+                    if self.levelEditorData[rowId][columnId] == T_GRASS:
+                        self.drawLevelEditorTile(columnId,rowId,GREEN)
+                    elif self.levelEditorData[rowId][columnId] == T_DIRT:
+                        self.drawLevelEditorTile(columnId, rowId, BROWN)
+
+
+
+
+    def drawLevelEditorTile(self,columnId,rowId,color):
+        pygame.draw.rect(self.display, color, pygame.rect.Rect((columnId * TILE_SIZE, rowId * TILE_SIZE), (TILE_SIZE, TILE_SIZE)))
+
+
 
 #Rzeczy do zrobienia:
 # 1. Narysować siatkę (grid)
