@@ -33,7 +33,9 @@ class GameObject(object):
         self.exitLabelRect = self.exitLabel.get_rect()
         self.exitLabelRect.center = self.exitMenuRectangle.center
 
-
+        self.levelEditorData = [0]*12
+        for row in range(len(self.levelEditorData)):
+            self.levelEditorData[row] = [0]*16
 
     # process game
     def process_game(self):
@@ -50,7 +52,7 @@ class GameObject(object):
                 sys.exit(0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.gameMode = GAMEMODE_MENU
-            elif event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 mousePosition = pygame.mouse.get_pos()
 
                 if self.gameMode == GAMEMODE_MENU:
@@ -66,7 +68,9 @@ class GameObject(object):
                     xId = mousePosition[0]//TILE_SIZE
                     yId = mousePosition[1]//TILE_SIZE
 
-                    print(xId,yId)
+                    self.levelEditorData[yId][xId] = (self.levelEditorData[yId][xId] + 1) % len(TERRAIN_TYPES)
+
+
 
 
 
@@ -107,11 +111,17 @@ class GameObject(object):
         for column in range(EDITOR_COLUMNS+1):
             pygame.draw.line(self.display,WHITE,(column*TILE_SIZE,0),(column*TILE_SIZE,SCREEN_HEIGHT))
 
+        for rowId in range(len(self.levelEditorData)):
+            for columnId in range(len(self.levelEditorData[rowId])):
+                if self.levelEditorData[rowId][columnId] != 0:
+                    pygame.draw.rect(self.display,GREEN,pygame.rect.Rect((columnId*TILE_SIZE,rowId*TILE_SIZE),(TILE_SIZE,TILE_SIZE)))
+
 #Rzeczy do zrobienia:
 # 1. Narysować siatkę (grid)
 # 2. Stworzyć listę zawierającą status naszych pól na mapie
 # 3. Dodać mechanizm podmieniana rodzaju pola po kliknięciu
-# 4. Zapis stanu poziomu do pliku
-# 5. Odczyt stanu poziomu z pliku
-# 6. Zamiana poziomu w grze na ten z edytora
+# 4. Wyświetlanie odpowiednich pól po kliknięciu
+# 5. Zapis stanu poziomu do pliku
+# 6. Odczyt stanu poziomu z pliku
+# 7. Zamiana poziomu w grze na ten z edytora
 
