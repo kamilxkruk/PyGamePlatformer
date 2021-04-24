@@ -9,12 +9,12 @@ class GameObject(object):
     def __init__(self):
         pygame.init()
 
-        self.screenSize = (SCREEN_WIDTH, SCREEN_HEIGHT) #Tuple
+        self.screenSize = (SCREEN_WIDTH+1, SCREEN_HEIGHT+1) #Tuple
         self.display = pygame.display.set_mode(self.screenSize)
         self.display_rect = self.display.get_rect()
         pygame.display.set_caption('First PyGame App')
         self.pyClock = pygame.time.Clock()
-        self.gameMode = 0 #0 - menu, 1 - gra, 2 - edit mode
+        self.gameMode = GAMEMODE_MENU #0 - menu, 1 - gra, 2 - edycja poziomu
         self.player = Player()
         self.levelEditor = LevelEditor()
         self.gravity = True
@@ -33,6 +33,8 @@ class GameObject(object):
         self.exitLabelRect = self.exitLabel.get_rect()
         self.exitLabelRect.center = self.exitMenuRectangle.center
 
+
+
     # process game
     def process_game(self):
         while True:
@@ -47,30 +49,44 @@ class GameObject(object):
             if event.type == pygame.QUIT:
                 sys.exit(0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                self.gameMode = 0
+                self.gameMode = GAMEMODE_MENU
             elif event.type == pygame.MOUSEBUTTONUP:
                 mousePosition = pygame.mouse.get_pos()
-                if self.gameMenuRectangle.collidepoint(mousePosition):
-                    self.gameMode = 1
-                elif self.editMenuRectangle.collidepoint(mousePosition):
-                    self.gameMode = 2
-                elif self.exitMenuRectangle.collidepoint(mousePosition):
-                    sys.exit(0)
+
+                if self.gameMode == GAMEMODE_MENU:
+                    if self.gameMenuRectangle.collidepoint(mousePosition):
+                        self.gameMode = GAMEMODE_GAME
+                    elif self.editMenuRectangle.collidepoint(mousePosition):
+                        self.gameMode = GAMEMODE_LEVEL_EDITOR
+                    elif self.exitMenuRectangle.collidepoint(mousePosition):
+                        sys.exit(0)
+
+                elif self.gameMode == GAMEMODE_LEVEL_EDITOR:
+
+                    xId = mousePosition[0]//TILE_SIZE
+                    yId = mousePosition[1]//TILE_SIZE
+
+                    print(xId,yId)
+
+
 
     # read keyboard
     def read_keyboard(self):
         keys = pygame.key.get_pressed()
 
-        if self.gameMode == 1:
+        if self.gameMode == GAMEMODE_GAME:
             self.player.move(keys)
 
     def print(self):
         self.display.fill(BLACK)
 
-        if self.gameMode == 0:
+        if self.gameMode == GAMEMODE_MENU:
             self.print_menu()
-        elif self.gameMode == 1:
+        elif self.gameMode == GAMEMODE_GAME:
             self.print_game()
+        elif self.gameMode == GAMEMODE_LEVEL_EDITOR:
+            self.print_editor()
+
 
         pygame.display.flip()
 
@@ -84,3 +100,18 @@ class GameObject(object):
         self.display.blit(self.gameLabel,self.gameLabelRect)
         self.display.blit(self.editLabel,self.editLabelRect)
         self.display.blit(self.exitLabel,self.exitLabelRect)
+
+    def print_editor(self):
+        for row in range(EDITOR_ROWS+1):
+            pygame.draw.line(self.display,WHITE,(0,row*TILE_SIZE),(SCREEN_WIDTH,row*TILE_SIZE))
+        for column in range(EDITOR_COLUMNS+1):
+            pygame.draw.line(self.display,WHITE,(column*TILE_SIZE,0),(column*TILE_SIZE,SCREEN_HEIGHT))
+
+#Rzeczy do zrobienia:
+# 1. Narysować siatkę (grid)
+# 2. Stworzyć listę zawierającą status naszych pól na mapie
+# 3. Dodać mechanizm podmieniana rodzaju pola po kliknięciu
+# 4. Zapis stanu poziomu do pliku
+# 5. Odczyt stanu poziomu z pliku
+# 6. Zamiana poziomu w grze na ten z edytora
+
