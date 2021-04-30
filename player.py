@@ -38,6 +38,7 @@ class Player(object):
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
         self.infoLabel = self.myFont.render('Points: 0',1,WHITE)
         self.infoLabelRect = self.infoLabel.get_rect()
+        self.infoLabelRect.topleft = (0,SCREEN_HEIGHT)
 
         self.musicPlayer = pygame.mixer.init()
         self.coinSound = pygame.mixer.Sound('sounds/1.mp3')

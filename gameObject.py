@@ -10,8 +10,8 @@ class GameObject(object):
     def __init__(self):
         pygame.init()
 
-        self.screenSize = (SCREEN_WIDTH+1, SCREEN_HEIGHT+1) #Tuple
-        self.display = pygame.display.set_mode(self.screenSize)
+        self.windowSize = (WINDOW_WIDTH+1, WINDOW_HEIGHT+1) #Tuple
+        self.display = pygame.display.set_mode(self.windowSize)
         self.display_rect = self.display.get_rect()
         pygame.display.set_caption('First PyGame App')
         self.pyClock = pygame.time.Clock()
@@ -20,9 +20,12 @@ class GameObject(object):
         self.levelEditor = LevelEditor()
         self.gravity = True
 
-        self.gameMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+120,200,50)
-        self.editMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+220,200,50)
-        self.exitMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+320,200,50)
+        #Menu buttons
+        self.gameMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+170,200,50)
+        self.editMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+270,200,50)
+        self.exitMenuRectangle = pygame.Rect(self.display_rect.centerx-100,self.display_rect.top+370,200,50)
+
+        #Menu labels
         self.myMenuFont = pygame.font.SysFont("Times New Roman", 25)
         self.gameLabel = self.myMenuFont.render('Play', 1, WHITE)
         self.gameLabelRect = self.gameLabel.get_rect()
@@ -34,9 +37,24 @@ class GameObject(object):
         self.exitLabelRect = self.exitLabel.get_rect()
         self.exitLabelRect.center = self.exitMenuRectangle.center
 
-        self.levelEditorData = [0]*12
+        #Level editor buttons
+        self.saveEditorRectangle = pygame.Rect(175,SCREEN_HEIGHT+20,200,50)
+        self.loadEditorRectangle = pygame.Rect(425,SCREEN_HEIGHT+20,200,50)
+
+        self.saveEditorButtonLabel = self.myMenuFont.render('Save', 1, WHITE)
+        self.saveEditorButtonLabelRect = self.saveEditorButtonLabel.get_rect()
+        self.saveEditorButtonLabelRect.center = self.saveEditorRectangle.center
+        self.loadEditorButtonLabel = self.myMenuFont.render('Load', 1, WHITE)
+        self.loadEditorButtonLabelRect = self.loadEditorButtonLabel.get_rect()
+        self.loadEditorButtonLabelRect.center = self.loadEditorRectangle.center
+
+        #Level editor labels
+
+
+
+        self.levelEditorData = [0]*EDITOR_ROWS
         for row in range(len(self.levelEditorData)):
-            self.levelEditorData[row] = [0]*16
+            self.levelEditorData[row] = [0]*EDITOR_COLUMNS
 
     # process game
     def process_game(self):
@@ -102,6 +120,7 @@ class GameObject(object):
 
     def print_game(self):
         self.player.display(self.display)
+        pygame.draw.rect(self.display,WHITE,pygame.rect.Rect((0,0),(SCREEN_WIDTH,SCREEN_HEIGHT)),1)
 
     def print_menu(self):
         pygame.draw.rect(self.display,GRAY,self.gameMenuRectangle)
@@ -112,11 +131,14 @@ class GameObject(object):
         self.display.blit(self.exitLabel,self.exitLabelRect)
 
     def print_editor(self):
+
+        #Draw grid
         for row in range(EDITOR_ROWS+1):
             pygame.draw.line(self.display,WHITE,(0,row*TILE_SIZE),(SCREEN_WIDTH,row*TILE_SIZE))
         for column in range(EDITOR_COLUMNS+1):
             pygame.draw.line(self.display,WHITE,(column*TILE_SIZE,0),(column*TILE_SIZE,SCREEN_HEIGHT))
 
+        #Draw level tiles
         for rowId in range(len(self.levelEditorData)):
             for columnId in range(len(self.levelEditorData[rowId])):
                 if self.levelEditorData[rowId][columnId] != 0:
@@ -125,7 +147,11 @@ class GameObject(object):
                     elif self.levelEditorData[rowId][columnId] == T_DIRT:
                         self.drawLevelEditorTile(columnId, rowId, BROWN)
 
-
+        #Draw editor buttons
+        pygame.draw.rect(self.display,GRAY,self.saveEditorRectangle)
+        pygame.draw.rect(self.display,GRAY,self.loadEditorRectangle)
+        self.display.blit(self.saveEditorButtonLabel,self.saveEditorButtonLabelRect)
+        self.display.blit(self.loadEditorButtonLabel, self.loadEditorButtonLabelRect)
 
 
     def drawLevelEditorTile(self,columnId,rowId,color):
