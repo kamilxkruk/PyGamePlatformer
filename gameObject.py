@@ -72,9 +72,7 @@ class GameObject(object):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.gameMode = GAMEMODE_MENU
             elif self.gameMode == GAMEMODE_LEVEL_EDITOR and event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                fileService =  FileManagement()
-                fileService.WriteLevelToFile('poziom1.txt',self.levelEditorData)
-                print("Saved!")
+                self.saveLevelEditorDataToFile()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mousePosition = pygame.mouse.get_pos()
@@ -89,10 +87,21 @@ class GameObject(object):
 
                 elif self.gameMode == GAMEMODE_LEVEL_EDITOR:
 
-                    xId = mousePosition[0]//TILE_SIZE
-                    yId = mousePosition[1]//TILE_SIZE
+                    if (mousePosition[0] > 0 and
+                        mousePosition[0] < SCREEN_WIDTH and
+                        mousePosition[1] > 0 and
+                        mousePosition[1] < SCREEN_HEIGHT):
 
-                    self.levelEditorData[yId][xId] = (self.levelEditorData[yId][xId] + 1) % len(TERRAIN_TYPES)
+                        xId = mousePosition[0]//TILE_SIZE
+                        yId = mousePosition[1]//TILE_SIZE
+
+                        self.levelEditorData[yId][xId] = (self.levelEditorData[yId][xId] + 1) % len(TERRAIN_TYPES)
+
+                    elif self.saveEditorRectangle.collidepoint(mousePosition):
+                        self.saveLevelEditorDataToFile()
+
+                    elif self.loadEditorRectangle.collidepoint(mousePosition):
+                        self.loadLevelEditorDataFromFile()
 
 
 
@@ -157,7 +166,14 @@ class GameObject(object):
     def drawLevelEditorTile(self,columnId,rowId,color):
         pygame.draw.rect(self.display, color, pygame.rect.Rect((columnId * TILE_SIZE, rowId * TILE_SIZE), (TILE_SIZE, TILE_SIZE)))
 
+    def saveLevelEditorDataToFile(self):
+        fileService = FileManagement()
+        fileService.WriteLevelToFile('poziom1.txt', self.levelEditorData)
+        print("Saved!")
 
+    def loadLevelEditorDataFromFile(self):
+        #TODO: Implement
+        print('Loaded!')
 
 #Rzeczy do zrobienia:
 # 1. Narysować siatkę (grid)
