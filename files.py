@@ -5,7 +5,7 @@ class FileManagement():
         pass
 
     def WriteLevelToFile(self,fileName: str, levelData: [[]]):
-        plikTestowy = open("level1.txt", "w")
+        plikTestowy = open(fileName, "w")
         plikTestowy.write('[')
         for rowId in range(len(levelData)):
             plikTestowy.write(str(levelData[rowId]))
@@ -13,6 +13,21 @@ class FileManagement():
                 plikTestowy.write(',\n')
         plikTestowy.write(']')
         plikTestowy.close()
+
+    def ReadLevelFromFile(self, fileName: str):
+        textFile = open(fileName)
+        levelData = []
+
+        rawText = textFile.read()
+        listLines = rawText[1:len(rawText)-1]
+        splittedLines = listLines.split(',\n')
+        for line in splittedLines:
+            singleList = line.strip('[]').split(',')
+            mappedList = list(map(int,singleList))
+            levelData.append(mappedList)
+
+        return levelData
+
 
     def WritePlatformsToFile(self, fileName : str, platformList: []):
         plikTestowy = open("level1.txt", "w")

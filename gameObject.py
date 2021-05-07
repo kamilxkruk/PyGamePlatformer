@@ -50,11 +50,16 @@ class GameObject(object):
 
         #Level editor labels
 
-
-
         self.levelEditorData = [0]*EDITOR_ROWS
         for row in range(len(self.levelEditorData)):
             self.levelEditorData[row] = [0]*EDITOR_COLUMNS
+
+        #Asset graphics
+        self.TERRAIN_GRAPHICS = {}
+        for terrain in TERRAIN_TYPES:
+            image = pygame.image.load('assets/'+terrain[1])
+            image = pygame.transform.scale(image,(TILE_SIZE,TILE_SIZE))
+            self.TERRAIN_GRAPHICS[terrain[0]] = image
 
     # process game
     def process_game(self):
@@ -151,10 +156,12 @@ class GameObject(object):
         for rowId in range(len(self.levelEditorData)):
             for columnId in range(len(self.levelEditorData[rowId])):
                 if self.levelEditorData[rowId][columnId] != 0:
-                    if self.levelEditorData[rowId][columnId] == T_GRASS:
-                        self.drawLevelEditorTile(columnId,rowId,GREEN)
-                    elif self.levelEditorData[rowId][columnId] == T_DIRT:
-                        self.drawLevelEditorTile(columnId, rowId, BROWN)
+                    self.drawLevelEditorTile(columnId,rowId,self.levelEditorData[rowId][columnId])
+                    #
+                    # if self.levelEditorData[rowId][columnId] == T_GRASS:
+                    #     self.drawLevelEditorTile(columnId,rowId,GREEN)
+                    # elif self.levelEditorData[rowId][columnId] == T_DIRT:
+                    #     self.drawLevelEditorTile(columnId, rowId, BROWN)
 
         #Draw editor buttons
         pygame.draw.rect(self.display,GRAY,self.saveEditorRectangle)
@@ -163,16 +170,17 @@ class GameObject(object):
         self.display.blit(self.loadEditorButtonLabel, self.loadEditorButtonLabelRect)
 
 
-    def drawLevelEditorTile(self,columnId,rowId,color):
-        pygame.draw.rect(self.display, color, pygame.rect.Rect((columnId * TILE_SIZE, rowId * TILE_SIZE), (TILE_SIZE, TILE_SIZE)))
+    def drawLevelEditorTile(self,columnId,rowId,terrainImageId):
+        self.display.blit(self.TERRAIN_GRAPHICS[terrainImageId],(columnId * TILE_SIZE, rowId * TILE_SIZE))
 
     def saveLevelEditorDataToFile(self):
         fileService = FileManagement()
-        fileService.WriteLevelToFile('poziom1.txt', self.levelEditorData)
+        fileService.WriteLevelToFile('level1.txt', self.levelEditorData)
         print("Saved!")
 
     def loadLevelEditorDataFromFile(self):
-        #TODO: Implement
+        fileService = FileManagement()
+        self.levelEditorData = fileService.ReadLevelFromFile('level1.txt')
         print('Loaded!')
 
 #Rzeczy do zrobienia:

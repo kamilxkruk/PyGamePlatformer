@@ -34,10 +34,15 @@ TILE_SIZE = 40
 EDITOR_ROWS = SCREEN_HEIGHT//TILE_SIZE
 EDITOR_COLUMNS = SCREEN_WIDTH//TILE_SIZE
 
-T_EMPTY = 0
-T_GRASS = 1
-T_DIRT = 2
-TERRAIN_TYPES = [T_EMPTY,T_GRASS,T_DIRT]
+T_EMPTY = (0,'')
+T_GRASS = (1,'trawa1.png')
+T_GRASS1 = (2,'trawa2.png')
+T_GRASS2 = (3,'trawa3.png')
+T_DIRT = (4,'ziemia.png')
+T_STONE = (5,'kamien.png')
+T_SAND = (6,'piasek.png')
+T_COIN = (7,'coin.png')
+TERRAIN_TYPES = [T_GRASS,T_GRASS1,T_GRASS2,T_DIRT,T_STONE,T_SAND,T_COIN]
 
 #Game mode consts
 GAMEMODE_MENU = 0
