@@ -4,6 +4,7 @@ from settings import *
 from sprites.coinSprite import CoinSprite
 from sprites.playerSprite import PlayerSprite
 from sprites.platformSprite import PlatformSprite
+from files import FileManagement
 from random import randint
 
 
@@ -27,13 +28,18 @@ class Player(object):
         self.rectangle = self.playerSprite.rect
 
         self.platformSpriteGroup = pygame.sprite.Group()
-        for platform in PLATFORMS:
-            self.platformSpriteGroup.add(PlatformSprite(*platform))
-            # * - spread operator
-
         self.coinSpriteGroup = pygame.sprite.Group()
-        self.coinSpriteGroup.add(CoinSprite(self.centerOfScreen[0]+100,self.centerOfScreen[1]+150))
-        self.coinSpriteGroup.add(CoinSprite(self.centerOfScreen[0]-200,self.centerOfScreen[1]))
+
+        #Prepare level sprites
+        platformsFromFile = FileManagement().ReadLevelFromFile('level1.txt')
+        for rowId in range(len(platformsFromFile)):
+            for columnId in range(len(platformsFromFile[rowId])):
+                tileValue = platformsFromFile[rowId][columnId]
+                if not tileValue in [T_EMPTY[0],T_COIN[0]]:
+                    self.platformSpriteGroup.add(PlatformSprite(columnId * TILE_SIZE, rowId * TILE_SIZE,TERRAIN_GRAPHICS[tileValue]))
+                elif tileValue == T_COIN[0]:
+                    self.coinSpriteGroup.add(CoinSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
+
 
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
         self.infoLabel = self.myFont.render('Points: 0',1,WHITE)
@@ -123,19 +129,8 @@ class Player(object):
 
 
     def display(self, display: pygame.Surface):
-        # self.iteration += 1
-        # if self.iteration > 50:
-        #     self.iteration = 0
-
         display.blit(self.infoLabel,self.infoLabelRect)
-        #
-        # allSprites = self.platformSpriteGroup.sprites()
-        # for x in allSprites:
-        #     x.rect.y += 2
-        #
-        # if self.iteration == 50:
-        #     self.platformSpriteGroup.add(PlatformSprite(randint(150,550),285))
-        #
+
 
         self.platformSpriteGroup.update()
         self.platformSpriteGroup.draw(display)

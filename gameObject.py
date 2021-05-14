@@ -54,12 +54,6 @@ class GameObject(object):
         for row in range(len(self.levelEditorData)):
             self.levelEditorData[row] = [0]*EDITOR_COLUMNS
 
-        #Asset graphics
-        self.TERRAIN_GRAPHICS = {}
-        for terrain in TERRAIN_TYPES:
-            image = pygame.image.load('assets/'+terrain[1])
-            image = pygame.transform.scale(image,(TILE_SIZE,TILE_SIZE))
-            self.TERRAIN_GRAPHICS[terrain[0]] = image
 
     # process game
     def process_game(self):
@@ -85,6 +79,7 @@ class GameObject(object):
                 if self.gameMode == GAMEMODE_MENU:
                     if self.gameMenuRectangle.collidepoint(mousePosition):
                         self.gameMode = GAMEMODE_GAME
+                        self.player = Player()
                     elif self.editMenuRectangle.collidepoint(mousePosition):
                         self.gameMode = GAMEMODE_LEVEL_EDITOR
                     elif self.exitMenuRectangle.collidepoint(mousePosition):
@@ -100,7 +95,12 @@ class GameObject(object):
                         xId = mousePosition[0]//TILE_SIZE
                         yId = mousePosition[1]//TILE_SIZE
 
-                        self.levelEditorData[yId][xId] = (self.levelEditorData[yId][xId] + 1) % len(TERRAIN_TYPES)
+                        pressedMouseButtons = pygame.mouse.get_pressed(3)
+
+                        if pressedMouseButtons[0]:
+                            self.levelEditorData[yId][xId] = (self.levelEditorData[yId][xId] + 1) % (len(TERRAIN_TYPES)+1)
+                        elif pressedMouseButtons[2]:
+                            self.levelEditorData[yId][xId] = 0
 
                     elif self.saveEditorRectangle.collidepoint(mousePosition):
                         self.saveLevelEditorDataToFile()
@@ -157,11 +157,6 @@ class GameObject(object):
             for columnId in range(len(self.levelEditorData[rowId])):
                 if self.levelEditorData[rowId][columnId] != 0:
                     self.drawLevelEditorTile(columnId,rowId,self.levelEditorData[rowId][columnId])
-                    #
-                    # if self.levelEditorData[rowId][columnId] == T_GRASS:
-                    #     self.drawLevelEditorTile(columnId,rowId,GREEN)
-                    # elif self.levelEditorData[rowId][columnId] == T_DIRT:
-                    #     self.drawLevelEditorTile(columnId, rowId, BROWN)
 
         #Draw editor buttons
         pygame.draw.rect(self.display,GRAY,self.saveEditorRectangle)
@@ -171,7 +166,7 @@ class GameObject(object):
 
 
     def drawLevelEditorTile(self,columnId,rowId,terrainImageId):
-        self.display.blit(self.TERRAIN_GRAPHICS[terrainImageId],(columnId * TILE_SIZE, rowId * TILE_SIZE))
+        self.display.blit(TERRAIN_GRAPHICS[terrainImageId],(columnId * TILE_SIZE, rowId * TILE_SIZE))
 
     def saveLevelEditorDataToFile(self):
         fileService = FileManagement()

@@ -3,9 +3,8 @@ from settings import *
 
 class PlatformSprite(pygame.sprite.Sprite):
 
-    def __init__(self,centerX:float,centerY:float, width:int=150, height:int=30):
+    def __init__(self, x:float,y:float, tileImage: pygame.Surface, width:int=50, height:int=50):
        pygame.sprite.Sprite.__init__(self)
-       self.image = pygame.Surface((width, height))
-       self.image.fill(BROWN)
+       self.image = tileImage
        self.rect = self.image.get_rect()
-       self.rect.center = (centerX,centerY)
+       self.rect.topleft = (x,y)

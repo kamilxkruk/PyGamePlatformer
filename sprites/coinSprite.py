@@ -3,9 +3,8 @@ from settings import *
 
 class CoinSprite(pygame.sprite.Sprite):
 
-    def __init__(self,centerX:float,centerY:float):
+    def __init__(self,x:float,y:float):
        pygame.sprite.Sprite.__init__(self)
-       self.image = pygame.Surface((30, 30))
-       self.image.fill(YELLOW)
+       self.image = TERRAIN_GRAPHICS[T_COIN[0]]
        self.rect = self.image.get_rect()
-       self.rect.center = (centerX,centerY)
+       self.rect.topleft = (x,y)

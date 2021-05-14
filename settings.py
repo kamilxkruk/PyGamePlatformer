@@ -1,3 +1,5 @@
+import pygame
+
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 700
 
@@ -43,6 +45,12 @@ T_STONE = (5,'kamien.png')
 T_SAND = (6,'piasek.png')
 T_COIN = (7,'coin.png')
 TERRAIN_TYPES = [T_GRASS,T_GRASS1,T_GRASS2,T_DIRT,T_STONE,T_SAND,T_COIN]
+
+TERRAIN_GRAPHICS = {}
+for terrain in TERRAIN_TYPES:
+    image = pygame.image.load('assets/'+terrain[1])
+    image = pygame.transform.scale(image,(TILE_SIZE,TILE_SIZE))
+    TERRAIN_GRAPHICS[terrain[0]] = image
 
 #Game mode consts
 GAMEMODE_MENU = 0
