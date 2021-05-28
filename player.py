@@ -54,8 +54,16 @@ class Player(object):
         self.infoLabelRect = self.infoLabel.get_rect()
         self.infoLabelRect.topleft = (0,SCREEN_HEIGHT)
 
+        self.endGameFont = pygame.font.SysFont(None,100,bold=True)
+        self.endGameLabel = self.endGameFont.render('KONIEC GRY',1,RED)
+        self.endGameLabelRect = self.endGameLabel.get_rect()
+        self.endGameLabelRect.center = self.centerOfScreen
+
+        self.showEndGameLabel = False
+
+
         self.musicPlayer = pygame.mixer.init()
-        self.coinSound = pygame.mixer.Sound('sounds/1.mp3')
+        self.coinSound = pygame.mixer.Sound('../testPyGame/assets/1.mp3')
 
         self.platformCollision = []
 
@@ -135,27 +143,36 @@ class Player(object):
             self.onPlatform = True
             self.rectangle.bottom = self.platformCollision[0].rect.top
 
+    def detectLavaCollision(self):
+        playerWithLavaCollision = spritecollide(self.playerSprite,self.lavaSpriteGroup,False)
+        if playerWithLavaCollision:
+            self.playerSprite.kill()
+
+            self.showEndGameLabel = True
+
 
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
+        if self.showEndGameLabel:
+            display.blit(self.endGameLabel,self.endGameLabelRect)
 
+        if not self.showEndGameLabel:
+            self.platformSpriteGroup.update()
+            self.platformSpriteGroup.draw(display)
 
-        self.platformSpriteGroup.update()
-        self.platformSpriteGroup.draw(display)
+            self.coinSpriteGroup.update()
+            self.coinSpriteGroup.draw(display)
 
-        self.coinSpriteGroup.update()
-        self.coinSpriteGroup.draw(display)
+            self.lavaSpriteGroup.update()
+            self.lavaSpriteGroup.draw(display)
 
-        self.lavaSpriteGroup.update()
-        self.lavaSpriteGroup.draw(display)
+            self.playerSpriteGroup.update()
+            self.playerSpriteGroup.draw(display)
 
-        self.playerSpriteGroup.update()
-        self.playerSpriteGroup.draw(display)
+            self.detectPlatformCollision()
+            self.detectCoinCollision()
+            self.detectLavaCollision()
 
-
-        self.detectPlatformCollision()
-
-        self.detectCoinCollision()
 
 
 
