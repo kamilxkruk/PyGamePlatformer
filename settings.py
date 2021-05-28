@@ -44,7 +44,9 @@ T_DIRT = (4,'ziemia.png')
 T_STONE = (5,'kamien.png')
 T_SAND = (6,'piasek.png')
 T_COIN = (7,'coin.png')
-TERRAIN_TYPES = [T_GRASS,T_GRASS1,T_GRASS2,T_DIRT,T_STONE,T_SAND,T_COIN]
+T_LAVA_TOP = (8,'lava_top.png')
+T_LAVA_DEEP = (9,'lava_deep.png')
+TERRAIN_TYPES = [T_GRASS,T_GRASS1,T_GRASS2,T_DIRT,T_STONE,T_SAND,T_COIN,T_LAVA_TOP,T_LAVA_DEEP]
 
 TERRAIN_GRAPHICS = {}
 for terrain in TERRAIN_TYPES:

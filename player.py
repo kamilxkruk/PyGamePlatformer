@@ -2,6 +2,8 @@ import pygame
 from pygame.sprite import spritecollide
 from settings import *
 from sprites.coinSprite import CoinSprite
+from sprites.lavaBottomSprite import LavaBottomSprite
+from sprites.lavaTopSprite import LavaTopSprite
 from sprites.playerSprite import PlayerSprite
 from sprites.platformSprite import PlatformSprite
 from files import FileManagement
@@ -29,16 +31,22 @@ class Player(object):
 
         self.platformSpriteGroup = pygame.sprite.Group()
         self.coinSpriteGroup = pygame.sprite.Group()
+        self.lavaSpriteGroup = pygame.sprite.Group()
 
         #Prepare level sprites
         platformsFromFile = FileManagement().ReadLevelFromFile('level1.txt')
         for rowId in range(len(platformsFromFile)):
             for columnId in range(len(platformsFromFile[rowId])):
                 tileValue = platformsFromFile[rowId][columnId]
-                if not tileValue in [T_EMPTY[0],T_COIN[0]]:
-                    self.platformSpriteGroup.add(PlatformSprite(columnId * TILE_SIZE, rowId * TILE_SIZE,TERRAIN_GRAPHICS[tileValue]))
-                elif tileValue == T_COIN[0]:
-                    self.coinSpriteGroup.add(CoinSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
+                if tileValue != T_EMPTY[0]:
+                    if tileValue in [T_GRASS[0],T_GRASS1[0],T_GRASS2[0],T_DIRT[0],T_STONE[0],T_SAND[0]]:
+                        self.platformSpriteGroup.add(PlatformSprite(columnId * TILE_SIZE, rowId * TILE_SIZE,TERRAIN_GRAPHICS[tileValue]))
+                    elif tileValue == T_COIN[0]:
+                        self.coinSpriteGroup.add(CoinSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
+                    elif tileValue == T_LAVA_TOP[0]:
+                        self.lavaSpriteGroup.add(LavaTopSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
+                    elif tileValue == T_LAVA_DEEP[0]:
+                        self.lavaSpriteGroup.add(LavaBottomSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
 
 
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
@@ -54,7 +62,7 @@ class Player(object):
 
     def move(self, keys):
         self.acc_x = 0
-        if self.rectangle.bottom < SCREEN_HEIGHT:
+        if self.rectangle.bottom + self.velocity_Y < SCREEN_HEIGHT:
             self.acc_y = GRAVITY
         else:
             self.velocity_Y = 0
@@ -138,8 +146,12 @@ class Player(object):
         self.coinSpriteGroup.update()
         self.coinSpriteGroup.draw(display)
 
+        self.lavaSpriteGroup.update()
+        self.lavaSpriteGroup.draw(display)
+
         self.playerSpriteGroup.update()
         self.playerSpriteGroup.draw(display)
+
 
         self.detectPlatformCollision()
 

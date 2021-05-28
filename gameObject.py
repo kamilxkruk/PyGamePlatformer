@@ -108,9 +108,13 @@ class GameObject(object):
                     elif self.loadEditorRectangle.collidepoint(mousePosition):
                         self.loadLevelEditorDataFromFile()
 
-
-
-
+            elif event.type == pygame.MOUSEWHEEL and self.gameMode == GAMEMODE_LEVEL_EDITOR:
+                print('x: ',event.x,'y:',event.y)
+                self.levelEditorData[yId][xId] = (self.levelEditorData[yId][xId] + event.y)
+                if self.levelEditorData[yId][xId] > len(TERRAIN_TYPES):
+                    self.levelEditorData[yId][xId] = 0
+                elif self.levelEditorData[yId][xId] < 0:
+                    self.levelEditorData[yId][xId] = len(TERRAIN_TYPES)
 
     # read keyboard
     def read_keyboard(self):
