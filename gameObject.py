@@ -72,6 +72,8 @@ class GameObject(object):
                 self.gameMode = GAMEMODE_MENU
             elif self.gameMode == GAMEMODE_LEVEL_EDITOR and event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                 self.saveLevelEditorDataToFile()
+            elif self.gameMode == GAMEMODE_GAME and event.type == pygame.KEYDOWN and event.key == pygame.K_LCTRL:
+                self.player.shoot()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mousePosition = pygame.mouse.get_pos()
@@ -122,6 +124,7 @@ class GameObject(object):
 
         if self.gameMode == GAMEMODE_GAME:
             self.player.move(keys)
+            self.player.moveMonsters()
 
     def print(self):
         self.display.fill(BLACK)

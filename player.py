@@ -6,17 +6,23 @@ from sprites.lavaBottomSprite import LavaBottomSprite
 from sprites.lavaTopSprite import LavaTopSprite
 from sprites.playerSprite import PlayerSprite
 from sprites.platformSprite import PlatformSprite
+from sprites.monsterSprite import MonsterSprite
+from sprites.bulletSprite import BulletSprite
 from files import FileManagement
 from random import randint
 
 
 class Player(object):
+
     def __init__(self):
+
         self.centerOfScreen = (SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2)
         self.velocity_X = 0
         self.velocity_Y = 0
         self.acc_x = 0
         self.acc_y = 0
+
+        self.directionX = DIRECTION_RIGHT
 
         self.points = 0
 
@@ -32,6 +38,9 @@ class Player(object):
         self.platformSpriteGroup = pygame.sprite.Group()
         self.coinSpriteGroup = pygame.sprite.Group()
         self.lavaSpriteGroup = pygame.sprite.Group()
+        self.monsterSpriteGroup = pygame.sprite.Group()
+        self.bulletSpriteGroup = pygame.sprite.Group()
+
 
         #Prepare level sprites
         platformsFromFile = FileManagement().ReadLevelFromFile('level1.txt')
@@ -47,6 +56,8 @@ class Player(object):
                         self.lavaSpriteGroup.add(LavaTopSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
                     elif tileValue == T_LAVA_DEEP[0]:
                         self.lavaSpriteGroup.add(LavaBottomSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
+                    elif tileValue == T_MONSTER[0]:
+                        self.monsterSpriteGroup.add(MonsterSprite(columnId * TILE_SIZE, rowId * TILE_SIZE))
 
 
         self.myFont = pygame.font.SysFont("Times New Roman", 18)
@@ -63,7 +74,7 @@ class Player(object):
 
 
         self.musicPlayer = pygame.mixer.init()
-        self.coinSound = pygame.mixer.Sound('../testPyGame/assets/1.mp3')
+        self.coinSound = pygame.mixer.Sound('../pyGameProject1/sounds/1.mp3')
 
         self.platformCollision = []
 
@@ -79,8 +90,10 @@ class Player(object):
 
         if keys[pygame.K_d]:
             self.acc_x = 1.5
+            self.directionX = DIRECTION_RIGHT
         elif keys[pygame.K_a]:
             self.acc_x = -1.5
+            self.directionX = DIRECTION_LEFT
 
         if keys[pygame.K_w]:
             self.playerSprite.rect.y += 1
@@ -128,6 +141,17 @@ class Player(object):
                 self.velocity_Y = 0
                 self.playerSprite.rect.top = collidePlatformY[0].rect.bottom+1
 
+        for bullet in self.bulletSpriteGroup:
+            bullet.updateBullet()
+
+    def shoot(self):
+        self.bulletSpriteGroup.add(BulletSprite(self.directionX,self.playerSprite.rect))
+
+    def moveMonsters(self):
+        for monster in self.monsterSpriteGroup:
+            monster.move()
+
+
     def detectCoinCollision(self):
         collision = spritecollide(self.playerSprite,self.coinSpriteGroup,True)
         if collision:
@@ -150,6 +174,15 @@ class Player(object):
 
             self.showEndGameLabel = True
 
+    def detectBulletCollision(self):
+        for monster in self.monsterSpriteGroup:
+            if pygame.sprite.spritecollide(monster,self.bulletSpriteGroup,True):
+                if monster.lives > 1:
+                    monster.lives -= 1
+                else:
+                    self.monsterSpriteGroup.remove(monster)
+
+
 
     def display(self, display: pygame.Surface):
         display.blit(self.infoLabel,self.infoLabelRect)
@@ -169,9 +202,16 @@ class Player(object):
             self.playerSpriteGroup.update()
             self.playerSpriteGroup.draw(display)
 
+            self.monsterSpriteGroup.update()
+            self.monsterSpriteGroup.draw(display)
+
+            self.bulletSpriteGroup.update()
+            self.bulletSpriteGroup.draw(display)
+
             self.detectPlatformCollision()
             self.detectCoinCollision()
             self.detectLavaCollision()
+            self.detectBulletCollision()
 
 
 
